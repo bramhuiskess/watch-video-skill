@@ -45,13 +45,13 @@ python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)' 2>/dev
 for t in ffmpeg ffprobe; do
   command -v "$t" >/dev/null && ok "$t" || { bad "$t not found"; missing=1; }
 done
-command -v yt-dlp >/dev/null && ok "yt-dlp" || bad "yt-dlp not found (needed for URLs; local files still work)"
+command -v yt-dlp >/dev/null && ok "yt-dlp (optional)" || say "  --  yt-dlp not installed (optional, only for URLs; local files work without it)"
 
 if [ "$missing" = 1 ]; then
   say ""
   say "Install the missing tools first, then rerun this script:"
-  say "  macOS:          brew install python ffmpeg yt-dlp"
-  say "  Debian/Ubuntu:  sudo apt install python3 python3-venv ffmpeg && pipx install yt-dlp"
+  say "  macOS:          brew install python ffmpeg"
+  say "  Debian/Ubuntu:  sudo apt install python3 python3-venv ffmpeg"
   exit 1
 fi
 
@@ -129,5 +129,5 @@ done
 
 say ""
 say "Done. Ask your agent to watch a video, for example:"
-say '  "Watch https://www.youtube.com/watch?v=jNQXAC9IVRw and summarize it"'
+say '  "Watch ~/Desktop/recording.mov and tell me what happens"'
 say "Restart the agent (or start a new session) so it picks up the skill."

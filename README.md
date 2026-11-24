@@ -2,7 +2,7 @@
 
 A skill that lets AI coding agents watch videos. Works with **Codex**, **Claude Code**, **Antigravity** and **Gemini CLI**.
 
-Give your agent a YouTube link, a screen recording or any video file and ask what happens in it. The agent pulls stills from across the video, gets a transcript, looks at the frames, and answers with timestamps. For example:
+Give your agent a screen recording, a demo video or any other video file and ask what happens in it. The agent pulls stills from across the video, gets a transcript, looks at the frames, and answers with timestamps. For example:
 
 ```
 > watch ./bug-repro.mov and tell me where the layout breaks
@@ -16,13 +16,13 @@ Give your agent a YouTube link, a screen recording or any video file and ask wha
 
 I wanted Codex to watch a screen recording and couldn't find a good skill for it. What I did find either sent the video to some cloud API, needed API keys, or ran install scripts I didn't trust. So I built my own: it runs locally, the code is short enough to read in one sitting, and it doesn't send anything anywhere unless you tell it to.
 
-Turns out it's useful for more than bug recordings. I use it to summarize talks, check what a tutorial covers before I sit through it, and review UI flows.
+Turns out it's useful for more than bug recordings. I use it to review UI flows, go through recorded meetings and demos, and check my own videos before I share them.
 
 ## How it works
 
 You can't feed a video into a language model, but you can do what a person does when they skim one.
 
-1. `watch.py` takes a URL or a local file. URLs go through [yt-dlp](https://github.com/yt-dlp/yt-dlp).
+1. `watch.py` takes a local video file. It can also take a URL if you have [yt-dlp](https://github.com/yt-dlp/yt-dlp) installed; yt-dlp is optional and not included in this repo.
 2. [ffmpeg](https://ffmpeg.org) pulls evenly spaced stills (40 by default) and builds labelled contact sheets.
 3. It gets a transcript, trying in this order:
    - subtitles from the site
@@ -34,12 +34,14 @@ Everything lands in `./.watch/<name>/` in your project, so you can open the fram
 
 ## Install
 
-Requirements: macOS or Linux, Python 3.9+, ffmpeg, and yt-dlp (only for URLs).
+Requirements: macOS or Linux, Python 3.9+ and ffmpeg.
 
 ```bash
 # macOS
-brew install python ffmpeg yt-dlp
+brew install python ffmpeg
 ```
+
+Optional: install yt-dlp yourself if you also want to pass URLs. Only use it for videos you have the right to download.
 
 ```bash
 git clone https://github.com/bramhuiskess/watch-video-skill.git
@@ -84,15 +86,15 @@ No sudo, no global pip installs, no changes to your shell config. If you already
 
 Just ask in plain language:
 
-- "Watch https://youtu.be/... and summarize it"
 - "Look at ~/Desktop/recording.mov. At what point does the upload fail?"
-- "What's on the slides between 10:00 and 15:00 in this talk?"
+- "Watch demo.mp4 and write release notes for what it shows"
+- "What's on the slides between 10:00 and 15:00 in meeting.mp4?"
 
 You can run the script yourself as well:
 
 ```bash
-python3 ~/.local/share/watch-video/watch.py video.mp4 --max-frames 60
-python3 ~/.local/share/watch-video/watch.py "https://youtu.be/..." --start 600 --end 900 --interval 5
+python3 ~/.local/share/watch-video/watch.py recording.mov --max-frames 60
+python3 ~/.local/share/watch-video/watch.py meeting.mp4 --start 600 --end 900 --interval 5
 ```
 
 | Option | Default | What it does |
@@ -123,7 +125,8 @@ Found a security problem? See [SECURITY.md](SECURITY.md).
 
 Provided as is, without warranty of any kind. See [LICENSE](LICENSE).
 
-- **Respect copyright and terms of service.** Only download videos you have the right to download. Some sites forbid downloading in their terms. You're responsible for what you watch with this.
+- **Made for your own videos.** This is built for screen recordings, demos and other video you made or have the rights to. It contains no download code of its own and does not bypass DRM or any other copy protection; protected videos won't work.
+- **Respect copyright and terms of service.** If you install yt-dlp and pass URLs, only download videos you have the right to download. Many sites forbid downloading in their terms. You're responsible for what you use this on.
 - **Agents make mistakes.** The agent sees stills, not motion. It can miss things that happen between frames or misread text. Check anything that matters.
 - **Third-party tools.** This relies on ffmpeg, yt-dlp, Whisper and your AI agent, each with its own license and behaviour. Keep ffmpeg and yt-dlp up to date, since they parse untrusted media.
 - **Not affiliated** with OpenAI, Anthropic, Google, or the authors of any tool listed here.
